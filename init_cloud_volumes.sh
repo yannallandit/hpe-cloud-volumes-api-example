@@ -15,6 +15,8 @@
 location="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 rep_store=`grep rep_store ${location}/init_cloud_volumes.config | cut -d "=" -f2`
 rep_vol=`grep rep_vol ${location}/init_cloud_volumes.config | cut -d "=" -f2`
+chapuser=`grep chap_user ${location}/init_cloud_volumes.config | cut -d "=" -f2`
+chapsecret=`grep chap_secret ${location}/init_cloud_volumes.config | cut -d "=" -f2`
 cvpwd=`sudo cat /usr/local/etc/cvpwd`
 cvuser=`sudo cat /usr/local/etc/cvuser`
 new_cloudvol_name=cloud_vol-test-$(date +%Y-%m-%d-%s)
@@ -149,7 +151,8 @@ target_name=`curl --location --request GET "https://demo.cloudvolumes.hpe.com/ap
 #echo " "
 #read
 
-/usr/bin/sudo /home/ec2-user/cvctl connect cloudvolume --name ${new_cloudvol_name} --discovery-ip 52.192.0.201 --target-name ${target_name} --chap-user 9b6a1767-3d4c-374e-a335-58cc96f31a5b --chap-secret jrDP6HEIsHvTXoP7
+/usr/bin/sudo /home/ec2-user/cvctl connect cloudvolume --name ${new_cloudvol_name} --discovery-ip 52.192.0.201 --target-name ${target_name} --chap-user ${chapuser} --chap-secret ${chapsecret}
+#/usr/bin/sudo /home/ec2-user/cvctl connect cloudvolume --name ${new_cloudvol_name} --discovery-ip 52.192.0.201 --target-name ${target_name} --chap-user 9b6a1767-3d4c-374e-a335-58cc96f31a5b --chap-secret jrDP6HEIsHvTXoP7
 
 #echo "after cvctl connect cloudvolume"
 #read
