@@ -5,9 +5,16 @@
 ##########################################
 
 #################################
+#### Instructions
+# To run this file, first set the Cloud Volumes variables in init_cloud_volumes.config which must reside in the same directory as this script
+# Then update your HPE Cloud Volumes credentiales stores in /usr/local/etc/cvuser and  /usr/local/etc/cvpwd
+#################################
+
+
 #### Variables
-rep_store=293
-rep_vol=06373244082bfeedaa000000000000000000000001
+location="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+rep_store=`grep rep_store ${location}/init_cloud_volumes.config | cut -d "=" -f2`
+rep_vol=`grep rep_vol ${location}/init_cloud_volumes.config | cut -d "=" -f2`
 cvpwd=`sudo cat /usr/local/etc/cvpwd`
 cvuser=`sudo cat /usr/local/etc/cvuser`
 new_cloudvol_name=cloud_vol-test-$(date +%Y-%m-%d-%s)
@@ -32,7 +39,10 @@ done
 /usr/bin/sudo vgchange -an
 
 target_id=`/usr/bin/sudo /home/ec2-user/cvctl list cloudvolumes |grep mapper | awk '{print $6}'`
-/usr/bin/sudo /home/ec2-user/cvctl disconnect cloudvolume --target-id $target_id
+for i in $target_id
+do	
+   /usr/bin/sudo /home/ec2-user/cvctl disconnect cloudvolume --target-id $i
+done
 
 #echo "cvctl disconnect" $target_id
 #read
@@ -71,6 +81,7 @@ do
           "initiator_ip": "'${initiator_ip}'"
       }
     }'
+
     curl --location --request DELETE "https://demo.cloudvolumes.hpe.com/api/v2/cloud_volumes/${i}" \
     --header 'Content-Type: application/json' \
     --header "X-Auth-Token: ${token}"
@@ -152,7 +163,7 @@ target_name=`curl --location --request GET "https://demo.cloudvolumes.hpe.com/ap
 /usr/bin/sudo lvscan
 /usr/bin/sudo vgchange -ay
 
-/usr/bin/sudo mount /dev/cloudvol02/lcloudvol02 /cv
+/usr/bin/sudo mount /dev/cloudvol05/lcloudvol05 /cv
 
 
 ##########################
